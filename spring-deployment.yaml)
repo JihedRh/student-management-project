@@ -1,0 +1,25 @@
+kind: Deployment
+metadata:
+  name: student-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: student-app
+  template:
+    metadata:
+      labels:
+        app: student-app
+    spec:
+      containers:
+      - name: student-app
+        image: jihedrinchi09/student-management:1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql-db:3306/studentdb?serverTimezone=UTC&useSSL=false"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "student"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "student"
