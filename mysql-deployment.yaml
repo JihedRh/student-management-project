@@ -1,20 +1,21 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: student-service
+  name: mysql-db
+  namespace: devops
 spec:
   selector:
-    app: student-app
+    app: mysql-db
   ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-  type: NodePort
-
+    - port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql-db
+  namespace: devops
 spec:
   replicas: 1
   selector:
@@ -26,16 +27,16 @@ spec:
         app: mysql-db
     spec:
       containers:
-      - name: mysql-db
-        image: mysql:8.0
-        ports:
-        - containerPort: 3306
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "root"
-        - name: MYSQL_DATABASE
-          value: "studentdb"
-        - name: MYSQL_USER
-          value: "student"
-        - name: MYSQL_PASSWORD
-          value: "student"
+        - name: mysql-db
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "root"
+            - name: MYSQL_DATABASE
+              value: "studentdb"
+            - name: MYSQL_USER
+              value: "student"
+            - name: MYSQL_PASSWORD
+              value: "student"
