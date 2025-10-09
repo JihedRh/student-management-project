@@ -1,6 +1,8 @@
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: student-app
+  namespace: devops
 spec:
   replicas: 1
   selector:
@@ -12,14 +14,28 @@ spec:
         app: student-app
     spec:
       containers:
-      - name: student-app
-        image: jihedrinchi09/student-management:1.0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: SPRING_DATASOURCE_URL
-          value: "jdbc:mysql://mysql-db:3306/studentdb?serverTimezone=UTC&useSSL=false"
-        - name: SPRING_DATASOURCE_USERNAME
-          value: "student"
-        - name: SPRING_DATASOURCE_PASSWORD
-          value: "student"
+        - name: student-app
+          image: jihedrinchi09/student-management:1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql-db:3306/studentdb?serverTimezone=UTC&useSSL=false"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "student"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "student"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-service
+  namespace: devops
+spec:
+  selector:
+    app: student-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  type: NodePort
