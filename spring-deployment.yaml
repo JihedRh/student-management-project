@@ -20,7 +20,7 @@ spec:
             - containerPort: 8080
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql-db:3306/studentdb?serverTimezone=UTC&useSSL=false"
+              value: "jdbc:mysql://mysql-db:3306/studentdb?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true"
             - name: SPRING_DATASOURCE_USERNAME
               value: "student"
             - name: SPRING_DATASOURCE_PASSWORD
