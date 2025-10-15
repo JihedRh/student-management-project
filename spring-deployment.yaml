@@ -17,7 +17,7 @@ spec:
         - name: student-app
           image: jihedrinchi09/student-management:1.0
           ports:
-            - containerPort: 8080
+            - containerPort: 8089
           env:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql-db:3306/studentdb?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true"
