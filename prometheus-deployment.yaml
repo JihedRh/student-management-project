@@ -1,16 +1,27 @@
 apiVersion: v1
-kind: Service
+kind: Namespace
 metadata:
-  name: prometheus-service
+  name: monitoring
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
   namespace: monitoring
-spec:
-  type: NodePort
-  ports:
-    - port: 9090
-      targetPort: 9090
-      nodePort: 30090
-  selector:
-    app: prometheus
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['192.168.75.140:9090']
+
+      - job_name: 'jenkins'
+        metrics_path: /prometheus
+        static_configs:
+          - targets: ['192.168.75.140:8080']
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,26 +43,31 @@ spec:
           image: prom/prometheus:latest
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
           ports:
             - containerPort: 9090
           volumeMounts:
             - name: prometheus-config
               mountPath: /etc/prometheus/
+            - name: prometheus-storage
+              mountPath: /prometheus
       volumes:
         - name: prometheus-config
           configMap:
             name: prometheus-config
+        - name: prometheus-storage
+          emptyDir: {}
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Service
 metadata:
-  name: prometheus-config
+  name: prometheus-service
   namespace: monitoring
-data:
-  prometheus.yml: |
-    global:
-      scrape_interval: 10s
-    scrape_configs:
-      - job_name: 'kubernetes'
-        kubernetes_sd_configs:
-          - role: pod
+spec:
+  type: NodePort
+  ports:
+    - port: 9090
+      targetPort: 9090
+      nodePort: 30090
+  selector:
+    app: prometheus
